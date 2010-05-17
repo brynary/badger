@@ -1,0 +1,21 @@
+%FDF-1.2 
+1 0 obj 
+<< 
+/FDF 
+<< 
+/Fields [
+<% people.each_with_index do |person,person_index| 
+  next unless person
+  person.each do |field_base, value|
+%>
+<< /T (<%= field_base %><%= person_index + 1 %>) /V (<%= escape_value value %>) >>
+<%
+  end
+end %>
+] 
+/F (<%= @template.absolute_path %>) >>
+ >> 
+endobj 
+trailer 
+<<  /Root 1 0 R  >> 
+%%EOF

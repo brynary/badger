@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+# ===================
+# = Check for pdftk =
+# ===================
+
+require 'rubygems'
+require 'optparse'
+require 'ostruct'
+require 'pathname'
+
+gem "activesupport", "~> 2.3"
+
+$LOAD_PATH << Pathname.new(__FILE__).join("..", "..", "lib").expand_path
+require 'badger'
+require 'badger/fields'
+require 'badger/driver'
+require 'badger/template'
+
+# =================
+# = Parse options =
+# =================
+
+options = OpenStruct.new
+
+opts = OptionParser.new do |opt|
+  
+  opt.banner = <<-EOB
+
+USAGE: badger -t TEMPLATE_FILE DATA_FILE [OPTIONS]"
+    
+  For information on how to build the template and data files, see
+  the documentation for the 'badger' RubyGem or read the local copy of the README
+  located at:
+    #{File.expand_path(File.join(File.dirname(__FILE__), '../README.txt'))}
+
+  OPTIONS
+
+EOB
+
+  opt.on('-r DEFAULT_ROLE', '--default-role DEFAULT_ROLE', "Modify the default role (or uses '#{Badger::Fields::DEFAULT_ROLE}')") do |r|
+    options.default_role = r
+  end
+
+  opt.on('-t TEMPLATE_FILE', '--template TEMPLATE_FILE', "REQUIRED: Template file (pdf with fields)") do |f|
+    if File.file?(f)
+      options.template_file = f
+    else
+      $stderr.puts "Invalid template file: #{f}"
+      exit
+    end
+  end
+  
+  opt.on('-o OUTPUT_FILE', '--output-file OUTPUT_FILE', "OPTIONAL: Set output filename (pdf)") do |o|
+    options.output_file = o
+  end
+
+  opt.on_tail('-h', '--help', "Show this message") do |section|
+    if section == 'template'
+      
+    else
+      puts opt
+    end
+    exit
+  end
+  
+end  
+opts.parse!
+
+# ===================
+# = Go! (ok, maybe) =
+# ===================
+
+if ARGV.empty? || !File.exists?(ARGV[0])
+  $stderr.puts "ERROR: Missing input file"
+  puts opts
+elsif !options.template_file
+  $stderr.puts "ERROR: Missing template file"
+  puts opts 
+else
+  output = Badger::Driver.new(ARGV[0], options).run
+  puts "Output #{output}"
+end
+

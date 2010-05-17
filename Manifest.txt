@@ -1,0 +1,11 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/badger
+lib/badger.rb
+lib/badger/driver.rb
+lib/badger/fields.rb
+lib/badger/template.rb
+data/fields.rfdf
+test/test_badger.rb
